@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en" class=""><head><script>window.livecodes = window.livecodes || {};</script><title>Untitled Project</title><meta name="title" content="Untitled Project"><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="./style.css"><script src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js" async=""></script><script type="importmap">{
+  "imports": {}
+}</script></head><body>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeliveryTrack Pro - Real-time Delivery Tracking System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #7209b7;
+            --danger: #ff4d4f;
+            --success: #10b981;
+            --warning: #ffd600;
+            --idle: #ffd600;
+            --bg: #181b2a;
+            --panel: #232743;
+            --card: #22253e;
+            --text: #f3f5fa;
+            --border: #31375b;
+            --shadow: 0 4px 24px rgba(0,0,0,.21);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .app-container {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        #map {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Main Navigation */
+        .main-nav {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            background: var(--panel);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 8px;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            color: var(--text);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-btn.active,
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            z-index: 50;
+            display: flex;
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 20px 24px;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            opacity: 0.7;
+            font-size: 12px;
+        }
+
+        /* Sidebar Panels */
+        .sidebar {
+            position: absolute;
+            left: 20px;
+            top: 80px;
+            width: 380px;
+            height: calc(100vh - 120px);
+            background: var(--panel);
+            color: var(--text);
+            box-shadow: var(--shadow);
+            z-index: 50;
+            border-radius: 16px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar.active {
+            display: flex;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        /* Form Elements */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-input {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #3651d4;
+        }
+
+        .btn-primary:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        /* Unit List */
+        .unit-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .unit-item {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .unit-item:hover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .unit-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .unit-status.active { background: var(--success); }
+        .unit-status.idle { background: var(--warning); }
+        .unit-status.offline { background: var(--danger); }
+
+        .unit-info {
+            flex: 1;
+        }
+
+        .unit-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .unit-desc {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Delivery Items */
+        .delivery-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .delivery-item {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delivery-item:hover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .delivery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .delivery-id {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .delivery-status {
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: var(--warning);
+            color: #333;
+        }
+
+        .status-in-transit {
+            background: var(--primary);
+            color: white;
+        }
+
+        .status-delivered {
+            background: var(--success);
+            color: white;
+        }
+
+        .delivery-info {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        /* Autocomplete */
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .autocomplete-item {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .autocomplete-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Log */
+        .log {
+            background: var(--card);
+            border-radius: 8px;
+            padding: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .log-entry.success { color: var(--success); }
+        .log-entry.error { color: var(--danger); }
+        .log-entry.warning { color: var(--warning); }
+
+        @media (max-width: 768px) {
+            .main-nav {
+                left: 10px;
+                right: 10px;
+                width: auto;
+            }
+            
+            .sidebar {
+                left: 10px;
+                width: calc(100vw - 20px);
+                max-width: 400px;
+            }
+            
+            .stats-container {
+                position: relative;
+                flex-direction: row;
+                margin: 10px;
+            }
+        }
+    </style>
+
+
+
+    <div class="app-container">
+        <!-- Map Container -->
+        <div id="map"></div>
+
+        <!-- Main Navigation -->
+        <nav class="main-nav">
+            <button class="nav-btn active" data-panel="tracking">
+                <i class="fas fa-truck"></i> Vehicle Tracking
+            </button>
+            <button class="nav-btn" data-panel="delivery">
+                <i class="fas fa-box"></i> Deliveries
+            </button>
+            <button class="nav-btn" data-panel="route">
+                <i class="fas fa-route"></i> Route Planning
+            </button>
+        </nav>
+
+        <!-- Stats Cards -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-truck"></i></div>
+                <div class="stat-value" id="val-active">0</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-pause-circle"></i></div>
+                <div class="stat-value" id="val-idle">0</div>
+                <div class="stat-label">Idle</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                <div class="stat-value" id="val-offline">0</div>
+                <div class="stat-label">Offline</div>
+            </div>
+        </div>
+
+        <!-- Vehicle Tracking Panel -->
+        <div class="sidebar active" id="tracking-panel">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-truck"></i> Vehicle Tracking</h2>
+            </div>
+            <div class="sidebar-content">
+                <div class="form-group">
+                    <label class="form-label">Connection Status</label>
+                    <div id="connection-status" style="padding: 8px; background: var(--card); border-radius: 6px; font-size: 14px;">
+                        Connecting to Wialon...
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Available Vehicles</label>
+                    <div class="unit-list" id="unit-list">
+                        <!-- Units will be populated here -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">System Log</label>
+                    <div class="log" id="log"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery Panel -->
+        <div class="sidebar" id="delivery-panel">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-box"></i> Delivery Management</h2>
+            </div>
+            <div class="sidebar-content">
+                <div class="form-group">
+                    <label class="form-label">Delivery ID</label>
+                    <input type="text" class="form-input" id="delivery-id" placeholder="Enter delivery ID">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Pickup Address</label>
+                    <div class="autocomplete-container">
+                        <input type="text" class="form-input" id="pickup-address" placeholder="Enter pickup location">
+                        <div class="autocomplete-dropdown" id="pickup-suggestions"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Delivery Address</label>
+                    <div class="autocomplete-container">
+                        <input type="text" class="form-input" id="delivery-address" placeholder="Enter delivery location">
+                        <div class="autocomplete-dropdown" id="delivery-suggestions"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Customer Name</label>
+                    <input type="text" class="form-input" id="customer-name" placeholder="Enter customer name">
+                </div>
+                
+                <button class="btn-primary" id="create-delivery">
+                    <i class="fas fa-plus"></i> Create Delivery
+                </button>
+
+                <div class="form-group" style="margin-top: 24px;">
+                    <label class="form-label">Active Deliveries</label>
+                    <div class="delivery-list" id="delivery-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Route Planning Panel -->
+        <div class="sidebar" id="route-panel">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-route"></i> Route Planning</h2>
+            </div>
+            <div class="sidebar-content">
+                <div class="form-group">
+                    <label class="form-label">Select Vehicle</label>
+                    <select class="form-input" id="route-vehicle">
+                        <option value="">Select a vehicle...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Destination</label>
+                    <div class="autocomplete-container">
+                        <input type="text" class="form-input" id="route-destination" placeholder="Enter destination">
+                        <div class="autocomplete-dropdown" id="route-suggestions"></div>
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="plan-route">
+                    <i class="fas fa-route"></i> Plan Route
+                </button>
+
+                <div class="form-group" style="margin-top: 24px;">
+                    <label class="form-label">Route Information</label>
+                    <div id="route-info" style="padding: 16px; background: var(--card); border-radius: 8px; font-size: 14px;">
+                        Select vehicle and destination to calculate route
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Scripts -->
+    <script src="https://api.wialon.com/jsapi/v2/wialon.js"></script>
+    <script>
+        // Global Configuration
+        const CONFIG = {
+            WIALON_TOKEN: "c1099bc37c906fd0832d8e783b60ae0dE00E534D76166C92501E8872C05084832853033E",
+            WIALON_URL: "https://hst-api.wialon.com",
+            UPDATE_INTERVAL: 15000 // 15 seconds
+        };
+
+        // Global Variables
+        let map, session, markers = {}, infoWindows = {}, units = [];
+        let directionsService, directionsRenderer;
+        let deliveries = new Map();
+        let selectedUnit = null;
+
+        // Utility Functions
+        function qs(selector) {
+            return document.querySelector(selector);
+        }
+
+        function statusColor(st) {
+            return st === 'active' ? "#10b981" : st === 'idle' ? "#ffd600" : "#ff4d4f";
+        }
+
+        function log(text, type = "info") {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `[${timestamp}] ${text}`;
+            
+            const logContainer = qs('#log');
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
+            
+            // Keep only last 50 entries
+            while (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        // Update Statistics
+        function updateStats() {
+            let act = 0, idle = 0, off = 0;
+            units.forEach(u => {
+                if (!u.position) off++;
+                else if (u.status === 'idle') idle++;
+                else act++;
+            });
+            
+            qs('#val-active').textContent = act;
+            qs('#val-idle').textContent = idle;
+            qs('#val-offline').textContent = off;
+        }
+
+        // Render Unit Panel
+        function renderPanel() {
+            const unitPanel = qs('#unit-list');
+            unitPanel.innerHTML = '';
+            
+            if (!units.length) {
+                unitPanel.innerHTML = '<div style="text-align: center; padding: 20px; opacity: 0.7;">No units found</div>';
+                return;
+            }
+
+            units.forEach(u => {
+                const row = document.createElement('div');
+                row.className = 'unit-item';
+                row.innerHTML = `
+                    <div class="unit-status ${u.status}"></div>
+                    <div class="unit-info">
+                        <div class="unit-name">${u.name}</div>
+                        <div class="unit-desc">${u.status} • Last: ${u.lastUpdate ? u.lastUpdate.toLocaleString() : "N/A"}</div>
+                    </div>
+                    <button class="btn-action"><i class="fas fa-crosshairs"></i></button>
+                `;
+                
+                row.querySelector('.btn-action').onclick = () => {
+                    if (u.position) {
+                        map.panTo(u.position);
+                        map.setZoom(15);
+                        google.maps.event.trigger(markers[u.id], 'click');
+                        selectedUnit = u;
+                        log(`Selected unit: ${u.name}`, "info");
+                    }
+                };
+                
+                unitPanel.appendChild(row);
+            });
+        }
+
+        // Place Markers on Map
+        function placeMarkers() {
+            // Clear existing markers
+            Object.values(markers).forEach(m => m.setMap(null));
+            markers = {};
+            infoWindows = {};
+
+            units.forEach(u => {
+                if (!u.position) return;
+
+                const icon = {
+                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                    scale: 6,
+                    fillColor: statusColor(u.status),
+                    fillOpacity: 1,
+                    strokeWeight: 2,
+                    strokeColor: statusColor(u.status),
+                    rotation: 0
+                };
+
+                const marker = new google.maps.Marker({
+                    position: u.position,
+                    map: map,
+                    title: u.name,
+                    icon: icon,
+                    zIndex: u.status === 'active' ? 100 : 10
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div style="padding: 8px; color: #333;">
+                            <h3 style="margin: 0 0 8px 0;">${u.name}</h3>
+                            <div>Status: <span style="color:${statusColor(u.status)}; font-weight: bold;">${u.status.toUpperCase()}</span></div>
+                            <div>Last Update: ${u.lastUpdate ? u.lastUpdate.toLocaleString() : "N/A"}</div>
+                            <div style="margin-top: 8px;">
+                                <button onclick="selectUnitForDelivery('${u.id}')" style="background: #4361ee; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                                    Select for Delivery
+                                </button>
+                            </div>
+                        </div>
+                    `
+                });
+
+                marker.addListener('click', () => {
+                    Object.values(infoWindows).forEach(i => i.close());
+                    infoWindow.open(map, marker);
+                });
+
+                markers[u.id] = marker;
+                infoWindows[u.id] = infoWindow;
+            });
+        }
+
+        // Load Units from Wialon
+        function loadUnits(cb) {
+            if (!window.wialon) {
+                setTimeout(() => loadUnits(cb), 1000);
+                return;
+            }
+
+            session = wialon.core.Session.getInstance();
+            session.initSession(CONFIG.WIALON_URL);
+            
+            session.loginToken(CONFIG.WIALON_TOKEN, "", (code) => {
+                if (code) {
+                    log('Wialon login error: ' + wialon.core.Errors.getErrorText(code), 'error');
+                    qs('#connection-status').innerHTML = '<span style="color: #ff4d4f;">Connection Failed</span>';
+                    return;
+                }
+
+                log('Successfully connected to Wialon', 'success');
+                qs('#connection-status').innerHTML = '<span style="color: #10b981;">Connected - Real-time Active</span>';
+
+                session.loadLibrary('itemIcon');
+                const flags = wialon.item.Item.dataFlag.base | wialon.item.Unit.dataFlag.lastMessage;
+                
+                session.updateDataFlags([{
+                    type: 'type',
+                    data: 'avl_unit',
+                    flags: flags,
+                    mode: 0
+                }], (error) => {
+                    if (error) {
+                        log('Data error: ' + wialon.core.Errors.getErrorText(error), 'error');
+                        return;
+                    }
+
+                    const wialonUnits = session.getItems('avl_unit') || [];
+                    const now = Date.now() / 1000;
+                    
+                    units = wialonUnits.map(u => {
+                        const p = u.getPosition();
+                        let st = 'offline';
+                        
+                        if (p) {
+                            const min = (now - p.t) / 60;
+                            st = min < 15 ? (min < 3 ? 'active' : 'idle') : 'offline';
+                        }
+
+                        return {
+                            id: u.getId(),
+                            name: u.getName(),
+                            status: st,
+                            position: p ? { lat: p.y, lng: p.x } : null,
+                            lastUpdate: p ? new Date(p.t * 1000) : null,
+                            wialonUnit: u
+                        };
+                    });
+
+                    log(`Loaded ${units.length} vehicles`, 'success');
+                    
+                    // Populate vehicle dropdowns
+                    populateVehicleDropdowns();
+                    
+                    if (cb) cb();
+                });
+            });
+        }
+
+        // Populate Vehicle Dropdowns
+        function populateVehicleDropdowns() {
+            const routeVehicleSelect = qs('#route-vehicle');
+            routeVehicleSelect.innerHTML = '<option value="">Select a vehicle...</option>';
+            
+            units.forEach(unit => {
+                const option = document.createElement('option');
+                option.value = unit.id;
+                option.textContent = unit.name;
+                routeVehicleSelect.appendChild(option);
+            });
+        }
+
+        // Initialize Google Maps
+        function initMap() {
+            map = new google.maps.Map(qs('#map'), {
+                center: { lat: -26.2041, lng: 28.0473 }, // Johannesburg
+                zoom: 10,
+                styles: [
+                    {
+                        "featureType": "all",
+                        "elementType": "labels.text.stroke",
+                        "stylers": [{"visibility": "off"}]
+                    },
+                    {
+                        "featureType": "all",
+                        "elementType": "labels.text.fill",
+                        "stylers": [{"color": "#a5aad4"}]
+                    },
+                    {
+                        "featureType": "landscape",
+                        "elementType": "geometry",
+                        "stylers": [{"color": "#181b2a"}]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "geometry",
+                        "stylers": [{"color": "#233"}, {"saturation": -20}]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "geometry",
+                        "stylers": [{"color": "#31375b"}]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "geometry",
+                        "stylers": [{"color": "#232743"}]
+                    }
+                ]
+            });
+
+            // Initialize directions service
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                polylineOptions: {
+                    strokeColor: '#4361ee',
+                    strokeWeight: 4
+                }
+            });
+            directionsRenderer.setMap(map);
+
+            // Load units and start updates
+            loadUnits(() => {
+                placeMarkers();
+                updateStats();
+                renderPanel();
+                
+                // Set up periodic updates
+                setInterval(() => {
+                    loadUnits(() => {
+                        placeMarkers();
+                        updateStats();
+                        renderPanel();
+                    });
+                }, CONFIG.UPDATE_INTERVAL);
+            });
+        }
+
+        // Initialize UI
+        function initializeUI() {
+            // Navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const panelId = e.target.dataset.panel;
+                    switchPanel(panelId);
+                    
+                    // Update active nav button
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                });
+            });
+
+            // Delivery form
+            qs('#create-delivery').addEventListener('click', createDelivery);
+            
+            // Route planning
+            qs('#plan-route').addEventListener('click', planRoute);
+
+            // Setup autocomplete
+            setupAutocomplete('pickup-address', 'pickup-suggestions');
+            setupAutocomplete('delivery-address', 'delivery-suggestions');
+            setupAutocomplete('route-destination', 'route-suggestions');
+        }
+
+        // Switch Panel
+        function switchPanel(panelId) {
+            document.querySelectorAll('.sidebar').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            const targetPanel = qs(`#${panelId}-panel`);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
+        }
+
+        // Setup Autocomplete (Mock)
+        function setupAutocomplete(inputId, dropdownId) {
+            const input = qs(`#${inputId}`);
+            const dropdown = qs(`#${dropdownId}`);
+            
+            if (!input || !dropdown) return;
+
+            input.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                if (query.length < 3) {
+                    dropdown.style.display = 'none';
+                    return;
+                }
+                
+                // Mock suggestions
+                const suggestions = generateMockSuggestions(query);
+                displaySuggestions(suggestions, dropdown);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        }
+
+        // Generate Mock Suggestions
+        function generateMockSuggestions(query) {
+            const mockAddresses = [
+                "123 Main Street, Johannesburg, South Africa",
+                "456 Oak Avenue, Sandton, South Africa", 
+                "789 Pine Road, Pretoria, South Africa",
+                "321 Elm Street, Cape Town, South Africa",
+                "654 Maple Drive, Durban, South Africa"
+            ];
+            
+            return mockAddresses.filter(addr => 
+                addr.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 5);
+        }
+
+        // Display Suggestions
+        function displaySuggestions(suggestions, dropdown) {
+            dropdown.innerHTML = '';
+            dropdown.style.display = 'block';
+            
+            suggestions.forEach(suggestion => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = suggestion;
+                item.onclick = () => {
+                    const input = dropdown.parentElement.querySelector('input');
+                    input.value = suggestion;
+                    dropdown.style.display = 'none';
+                };
+                dropdown.appendChild(item);
+            });
+        }
+
+        // Create Delivery
+        function createDelivery() {
+            const deliveryId = qs('#delivery-id').value.trim();
+            const pickupAddress = qs('#pickup-address').value.trim();
+            const deliveryAddress = qs('#delivery-address').value.trim();
+            const customerName = qs('#customer-name').value.trim();
+
+            if (!deliveryId || !pickupAddress || !deliveryAddress || !customerName) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const delivery = {
+                id: deliveryId,
+                pickupAddress,
+                deliveryAddress,
+                customerName,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                assignedUnit: null
+            };
+
+            deliveries.set(deliveryId, delivery);
+            updateDeliveryList();
+            log(`Created delivery ${deliveryId}`, 'success');
+            
+            // Clear form
+            qs('#delivery-id').value = '';
+            qs('#pickup-address').value = '';
+            qs('#delivery-address').value = '';
+            qs('#customer-name').value = '';
+        }
+
+        // Update Delivery List
+        function updateDeliveryList() {
+            const listContainer = qs('#delivery-list');
+            listContainer.innerHTML = '';
+
+            if (deliveries.size === 0) {
+                listContainer.innerHTML = '<div style="text-align: center; padding: 20px; opacity: 0.7;">No deliveries created</div>';
+                return;
+            }
+
+            deliveries.forEach((delivery, id) => {
+                const item = document.createElement('div');
+                item.className = 'delivery-item';
+                item.innerHTML = `
+                    <div class="delivery-header">
+                        <div class="delivery-id">#${delivery.id}</div>
+                        <div class="delivery-status status-${delivery.status}">${delivery.status.replace('-', ' ').toUpperCase()}</div>
+                    </div>
+                    <div class="delivery-info">Customer: ${delivery.customerName}</div>
+                    <div class="delivery-info">From: ${delivery.pickupAddress}</div>
+                    <div class="delivery-info">To: ${delivery.deliveryAddress}</div>
+                    <div class="delivery-info">Created: ${new Date(delivery.createdAt).toLocaleString()}</div>
+                `;
+                
+                item.addEventListener('click', () => {
+                    showDeliveryRoute(delivery.pickupAddress, delivery.deliveryAddress);
+                });
+                
+                listContainer.appendChild(item);
+            });
+        }
+
+        // Show Delivery Route
+        function showDeliveryRoute(pickup, destination) {
+            const request = {
+                origin: pickup,
+                destination: destination,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(result);
+                    log(`Route displayed from ${pickup} to ${destination}`, 'success');
+                } else {
+                    log(`Route calculation failed: ${status}`, 'error');
+                }
+            });
+        }
+
+        // Plan Route
+        function planRoute() {
+            const vehicleId = qs('#route-vehicle').value;
+            const destination = qs('#route-destination').value.trim();
+
+            if (!vehicleId) {
+                alert('Please select a vehicle');
+                return;
+            }
+
+            if (!destination) {
+                alert('Please enter a destination');
+                return;
+            }
+
+            const unit = units.find(u => u.id == vehicleId);
+            if (!unit || !unit.position) {
+                alert('Selected vehicle position not available');
+                return;
+            }
+
+            const request = {
+                origin: unit.position,
+                destination: destination,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(result);
+                    displayRouteInfo(result, unit);
+                    log(`Route planned for ${unit.name} to ${destination}`, 'success');
+                } else {
+                    log(`Route planning failed: ${status}`, 'error');
+                    alert('Route calculation failed: ' + status);
+                }
+            });
+        }
+
+        // Display Route Info
+        function displayRouteInfo(result, unit) {
+            const route = result.routes[0];
+            const leg = route.legs[0];
+            
+            const routeInfoDiv = qs('#route-info');
+            routeInfoDiv.innerHTML = `
+                <div style="margin-bottom: 8px;"><strong>Vehicle:</strong> ${unit.name}</div>
+                <div style="margin-bottom: 8px;"><strong>Distance:</strong> ${leg.distance.text}</div>
+                <div style="margin-bottom: 8px;"><strong>Duration:</strong> ${leg.duration.text}</div>
+                <div style="margin-bottom: 8px;"><strong>From:</strong> ${leg.start_address}</div>
+                <div><strong>To:</strong> ${leg.end_address}</div>
+            `;
+        }
+
+        // Select Unit for Delivery (called from info window)
+        function selectUnitForDelivery(unitId) {
+            const unit = units.find(u => u.id == unitId);
+            if (unit) {
+                selectedUnit = unit;
+                qs('#route-vehicle').value = unitId;
+                log(`Selected ${unit.name} for delivery assignment`, 'success');
+                
+                // Close info windows
+                Object.values(infoWindows).forEach(i => i.close());
+                
+                // Switch to delivery panel
+                switchPanel('delivery');
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                qs('[data-panel="delivery"]').classList.add('active');
+            }
+        }
+
+        // Start Real-time Updates for Deliveries
+        function startDeliveryUpdates() {
+            setInterval(() => {
+                // Simulate delivery status updates
+                deliveries.forEach((delivery, id) => {
+                    if (delivery.status === 'pending' && Math.random() > 0.95) {
+                        delivery.status = 'in-transit';
+                        log(`Delivery ${id} is now in transit`, 'info');
+                    } else if (delivery.status === 'in-transit' && Math.random() > 0.98) {
+                        delivery.status = 'delivered';
+                        log(`Delivery ${id} completed`, 'success');
+                    }
+                });
+                
+                updateDeliveryList();
+            }, 10000); // Update every 10 seconds
+        }
+
+        // Initialize Application
+        function initApp() {
+            initializeUI();
+            initMap();
+            startDeliveryUpdates();
+            log('DeliveryTrack Pro initialized', 'success');
+        }
+
+        // Make functions globally accessible
+        window.selectUnitForDelivery = selectUnitForDelivery;
+        window.initMap = initMap;
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+    </script>
+
+    <!-- Load Google Maps API -->
+    <script async="" defer="" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTHkrpqeH0nj-cpbYybjKcZYwKgDNf8z8&amp;libraries=places&amp;callback=initMap">
+    </script>
+
+<script src="./script.js"></script></body></html>
