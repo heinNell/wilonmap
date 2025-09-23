@@ -2,7 +2,6 @@
   "name": "wialon-dashboard",
   "private": true,
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
     "dev:3000": "next dev --port 3000 --hostname 0.0.0.0",
@@ -22,6 +21,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^20.14.12",
     "@types/react": "19.1.13",
     "autoprefixer": "^10.4.21",

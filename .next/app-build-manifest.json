@@ -1,19 +1,32 @@
 {
   "pages": {
-    "/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/layout.js"
+    "/_not-found/page": [
+      "static/chunks/webpack-14b4858b1f13d94c.js",
+      "static/chunks/da8b52a0-ab2620137533c063.js",
+      "static/chunks/143-6e476f453ed97d7d.js",
+      "static/chunks/main-app-dc11e77acaae4851.js",
+      "static/chunks/app/_not-found/page-ddf684cdefbcfd1c.js"
     ],
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+    "/layout": [
+      "static/chunks/webpack-14b4858b1f13d94c.js",
+      "static/chunks/da8b52a0-ab2620137533c063.js",
+      "static/chunks/143-6e476f453ed97d7d.js",
+      "static/chunks/main-app-dc11e77acaae4851.js",
+      "static/chunks/app/layout-0f3c66514bf50dc0.js"
     ],
     "/api/wialon/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/wialon/route.js"
+      "static/chunks/webpack-14b4858b1f13d94c.js",
+      "static/chunks/da8b52a0-ab2620137533c063.js",
+      "static/chunks/143-6e476f453ed97d7d.js",
+      "static/chunks/main-app-dc11e77acaae4851.js",
+      "static/chunks/app/api/wialon/route-8d24b127078f635c.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-14b4858b1f13d94c.js",
+      "static/chunks/da8b52a0-ab2620137533c063.js",
+      "static/chunks/143-6e476f453ed97d7d.js",
+      "static/chunks/main-app-dc11e77acaae4851.js",
+      "static/chunks/app/page-e9b9954822587fbf.js"
     ]
   }
 }
