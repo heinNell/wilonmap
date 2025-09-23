@@ -1,0 +1,4 @@
+{
+  "/api/wialon/route": "app/api/wialon/route.js",
+  "/page": "app/page.js"
+}

@@ -1,0 +1,36 @@
+{
+  "name": "wialon-dashboard",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0",
+    "dev:3000": "next dev --port 3000 --hostname 0.0.0.0",
+    "dev:3001": "next dev --port 3001 --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "example": "tsx src/examples/basic-usage.ts",
+    "port:kill:3000": "kill -9 $(lsof -t -i:3000) 2>/dev/null || true"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "next": "15.5.3",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-leaflet": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.12",
+    "@types/react": "19.1.13",
+    "autoprefixer": "^10.4.21",
+    "dotenv": "^16.4.5",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "15.5.3",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.13",
+    "tsx": "^4.19.1",
+    "typescript": "^5.9.2"
+  }
+}
