@@ -14,7 +14,6 @@ yarn-error.log*
 # Build output
 dist/
 build/
-.next/
 
 # IDE
 .vscode/
