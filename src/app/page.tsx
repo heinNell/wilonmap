@@ -1,6 +1,6 @@
 import MapSection from "./components/MapSection";
 import LivePositionsSection from "./components/LivePositionsSection";
-import UnitsTable from "./components/UnitsTable";
+import UnitsTableSection from "./components/UnitsTableSection";
 
 export default function Page() {
   return (
@@ -36,7 +36,7 @@ export default function Page() {
       </section>
 
       <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-        <UnitsTable />
+        <UnitsTableSection />
       </div>
     </main>
   );
